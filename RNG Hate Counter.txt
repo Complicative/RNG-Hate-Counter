@@ -1,0 +1,9 @@
+## Title: RNG Hate Counter (NPC/Mob Kill Tracker)
+## Description: Tracks kills of all mobs and posts selected in chat.
+## Author: Complicative
+## Version: 1.2.6
+## APIVersion: 101034
+## SavedVariables: RNGHateCounterSettings RNGHateCounterDB
+## DependsOn: LibAddonMenu-2.0
+
+RNG Hate Counter.lua
