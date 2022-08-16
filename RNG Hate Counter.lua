@@ -1,6 +1,6 @@
 RNGHateCounter = {
     name = "RNG Hate Counter",
-    version = "1.2.6",
+    version = "1.3.0",
     author = "@Complicative",
 }
 
@@ -16,8 +16,8 @@ RNGHateCounter.Default = {
     squirrel2 = nil,
     squirrel3 = nil,
 }
-
-RNGHateCounter.db = {}
+RNGHateCounter.db = {
+}
 
 local LAM2 = LibAddonMenu2
 local debug = false
@@ -45,45 +45,53 @@ function RNGHateCounter.CombatCallbacks(_, result, isError, aName, aGraphic, aAc
 
     local player = zo_strformat("<<1>>", sName)
     local squirrel = zo_strformat("<<1>>", tName)
-    --posts all results, targetNames, sourceNames if debug is on
+    --posts stuff if debug is on
     if debug then
-        d(getTimeStamp() .. sName .. " did " .. result .. " to " .. tName)
+        if (result == 2262 or result == 2260) then
+            d(getTimeStamp() ..
+                sName .. "(" .. sType .. ")" .. " did " .. result .. " to " .. tName .. "(" .. tType .. ")")
+        end
     end
 
     -- 2262 -> kill with exp
     -- 2260 -> kill without exp (critters/dummy)
-    -- If player kills something
-    if (result == 2262 or result == 2260) and player ~= "" and tType ~= 1 then
-        -- Check if mob has is in the table already
-        if (RNGHateCounter.db[squirrel] ~= nil) then
+
+    if (tType ~= 0 and tType ~= 4) or squirrel == "" then --Target must be an NPC (tType == 0) or dummy (tType == 4 (could include more)) and it must have a name
+        return
+    end
+
+    if (result == 2262 or result == 2260) then
+        -- Check if mob has is the table already
+        if (RNGHateCounter.db.IteratableSavedVars[squirrel] ~= nil) then
             -- Increment value by 1
-            RNGHateCounter.db[squirrel] = RNGHateCounter.db[squirrel] + 1
+            RNGHateCounter.db.IteratableSavedVars[squirrel] = RNGHateCounter.db.IteratableSavedVars[squirrel] + 1
         else
             -- Set value to 1
-            RNGHateCounter.db[squirrel] = 1
+            RNGHateCounter.db.IteratableSavedVars[squirrel] = 1
         end
         -- If it's a tracked mob or everything is posted
         if (
             (string.lower(squirrel) == string.lower(RNGHateCounter.Settings.squirrel1) and
-                RNGHateCounter.db[squirrel] % RNGHateCounter.Settings.throttle1 == 0 and
+                RNGHateCounter.db.IteratableSavedVars[squirrel] % RNGHateCounter.Settings.throttle1 == 0 and
                 RNGHateCounter.Settings.throttle1 >= 0)
                 or
                 (string.lower(squirrel) == string.lower(RNGHateCounter.Settings.squirrel2) and
-                    RNGHateCounter.db[squirrel] % RNGHateCounter.Settings.throttle2 == 0 and
+                    RNGHateCounter.db.IteratableSavedVars[squirrel] % RNGHateCounter.Settings.throttle2 == 0 and
                     RNGHateCounter.Settings.throttle2 >= 0)
                 or
                 (string.lower(squirrel) == string.lower(RNGHateCounter.Settings.squirrel3) and
+                    RNGHateCounter.db.IteratableSavedVars[squirrel] % RNGHateCounter.Settings.throttle3 == 0 and
                     RNGHateCounter.Settings.throttle3 >= 0)
                 or
                 (
                 RNGHateCounter.Settings.throttle >= 0 and
-                    RNGHateCounter.db[squirrel] % RNGHateCounter.Settings.throttle == 0)
+                    RNGHateCounter.db.IteratableSavedVars[squirrel] % RNGHateCounter.Settings.throttle == 0)
             )
         -- and throttle rule allows to post
         then
             -- post mob + killed amount
-            CHAT_SYSTEM:AddMessage(getTimeStamp() ..
-                squirrel .. " (" .. RNGHateCounter.db[squirrel] .. ")")
+            CHAT_SYSTEM:AddMessage(getTimeStamp() .. cStart("FFFFFF") ..
+                squirrel .. " (" .. RNGHateCounter.db.IteratableSavedVars[squirrel] .. ")" .. cEnd())
         end
     end
 end
@@ -97,9 +105,20 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
 
     -- SavedSettings
     RNGHateCounter.Settings = ZO_SavedVars:NewAccountWide("RNGHateCounterSettings", 2, nil, RNGHateCounter.Default)
-    RNGHateCounter.db = ZO_SavedVars:NewAccountWide("RNGHateCounterDB", 1, nil, RNGHateCounter.db)
+    RNGHateCounter.db = ZO_SavedVars:NewAccountWide("RNGHateCounterDB", 1, nil,
+        { ["IteratableSavedVars"] = {}, migrated = false })
 
-
+    --Copy data from original structure, to new structure
+    if not RNGHateCounter.db.migrated then
+        for k, v in pairs(getmetatable(RNGHateCounter.db)["__index"]) do
+            if type(k) == "string" and type(v) == "number" and k ~= "version" then
+                RNGHateCounter.db.IteratableSavedVars[k] = v
+                RNGHateCounter.db[k] = nil
+            end
+        end
+        RNGHateCounter.db.migrated = true
+    end
+    --
 
     -------------------------------------------------------------------------------------------------
     -- Creating Settings  --
@@ -277,14 +296,23 @@ EVENT_MANAGER:RegisterForEvent(RNGHateCounter.name, EVENT_ADD_ON_LOADED, RNGHate
 
 
 SLASH_COMMANDS["/killcount"] = function(squirrel)
-    local count
-    if RNGHateCounter.db[squirrel] ~= nil then
-        count = RNGHateCounter.db[squirrel]
-    else
-        count = 0
+
+    if (squirrel) == [[]] then --open UI
+        RNGHateCounterUI.InitScrollList()
+    else --Output killcount of args
+        local count = 0
+        for k, v in pairs(RNGHateCounter.db.IteratableSavedVars) do
+            if string.lower(k) == string.lower(squirrel) then
+                count = v --get kill amount
+                squirrel = k --get proper Capitalisation
+            end
+        end
+        -- Posts kills of <squirrel> var if existing
+
+
+        CHAT_SYSTEM:AddMessage(getTimeStamp() .. cStart("FFFFFF") ..
+            "You have killed " ..
+            cStart("00BB00") ..
+            zo_strformat("<<2>>" .. cEnd() .. cStart("FFFFFF") .. " <<m:1>>", squirrel, count) .. cEnd())
     end
-    -- Posts kills of <squirrel> var if existing (Only works with proper capitalisation currently)
-    CHAT_SYSTEM:AddMessage(getTimeStamp() ..
-        "You have killed " ..
-        cStart("00BB00") .. zo_strformat("<<2>>" .. cEnd() .. " <<m:1>>", squirrel, count))
 end
