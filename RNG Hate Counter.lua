@@ -1,6 +1,6 @@
 RNGHateCounter = {
     name = "RNG Hate Counter",
-    version = "1.3.1",
+    version = "1.3.2",
     author = "@Complicative",
 }
 
@@ -138,14 +138,14 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
     local optionsData = {}
     optionsData[#optionsData + 1] = {
         type = "description",
-        text = "This add-on tracks all your killing blows on any npc. You can select up to 3 npc, where you can set up how often to post updates on these."
+        text = "This add-on tracks all your killing blows on any npc. You can select up to 3 npc, to have chat updates for."
             .. "\n" ..
             "One additional slider is available for all other npc." .. "\n\n" ..
             "Example: Setting the first npc to <Mammoth> and setting it's slider to <5>, while having the last slider on <10>, "
             ..
             "will result with updates on Mammoth kills at 5,10,15,.. and all other npc at 10,20,30,..." .. "\n\n" ..
             "Commands:" .. "\n" ..
-            "/killcount <npc> will post in chat the recorded kills on <npc>. Typing and capitalisation needs to be exact."
+            "/killcount will show a list of all your kills. Arrow down button changes sorting. Search bar for... searching"
     }
     optionsData[#optionsData + 1] = {
         type = "editbox",
