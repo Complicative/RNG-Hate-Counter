@@ -5,10 +5,17 @@ local differentCount = 0
 local totalCount = 0
 local sortByName = true
 
-function RNGHateCounterUI.OnStart(h, x, y)
+function RNGHateCounterUI.OnStart(h, hl, x, y)
     RNGHCTLC1:SetHidden(h)
+    RNGHCTLC1ButtonLabel:SetHidden(hl)
     RNGHCTLC1:ClearAnchors()
     RNGHCTLC1:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
+
+    for _, v in pairs(RNGHateCounter.db.IteratableSavedVars) do
+        totalCount = totalCount + v
+    end
+
+    RNGHCTLC1ButtonLabel:SetText(totalCount)
 end
 
 function RNGHateCounterUI.saveButtonLocation()

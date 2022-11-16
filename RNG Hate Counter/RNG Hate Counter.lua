@@ -1,6 +1,6 @@
 RNGHateCounter = {
     name = "RNG Hate Counter",
-    version = "1.4.0",
+    version = "1.4.1",
     author = "@Complicative",
 }
 
@@ -16,6 +16,7 @@ RNGHateCounter.Default = {
     squirrel2 = nil,
     squirrel3 = nil,
     buttonHidden = false;
+    buttonLabelHidden = false;
     buttonX = 100;
     buttonY = 100;
 }
@@ -64,6 +65,7 @@ function RNGHateCounter.CombatCallbacks(_, result, isError, aName, aGraphic, aAc
     end
 
     if (result == 2262 or result == 2260) then
+        RNGHCTLC1ButtonLabel:SetText(RNGHCTLC1ButtonLabel:GetText() + 1)
         -- Check if mob has is the table already
         if (RNGHateCounter.db.IteratableSavedVars[squirrel] ~= nil) then
             -- Increment value by 1
@@ -122,7 +124,8 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
         RNGHateCounter.db.migrated = true
     end
     --
-    RNGHateCounterUI.OnStart(RNGHateCounter.Settings.buttonHidden, RNGHateCounter.Settings.buttonX,
+    RNGHateCounterUI.OnStart(RNGHateCounter.Settings.buttonHidden, RNGHateCounter.Settings.buttonLabelHidden,
+        RNGHateCounter.Settings.buttonX,
         RNGHateCounter.Settings.buttonY)
 
     -------------------------------------------------------------------------------------------------
@@ -272,11 +275,21 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
     optionsData[#optionsData + 1] = {
         type = "checkbox",
         name = "Hide Button",
-        tooltip = "Want to hide the button |t24:24:esoui/art/fx/texture/modelfxtextures/blurred_skull.dds|t",
+        tooltip = "Want to hide the button?",
         getFunc = function() return RNGHateCounter.Settings.buttonHidden end,
         setFunc = function(value)
             RNGHateCounter.Settings.buttonHidden = value
             RNGHCTLC1:SetHidden(value)
+        end,
+    }
+    optionsData[#optionsData + 1] = {
+        type = "checkbox",
+        name = "Hide Kill Count on Button",
+        tooltip = "Want to hide the totel kill count on the button?",
+        getFunc = function() return RNGHateCounter.Settings.buttonLabelHidden end,
+        setFunc = function(value)
+            RNGHateCounter.Settings.buttonLabelHidden = value
+            RNGHCTLC1ButtonLabel:SetHidden(value)
         end,
     }
     optionsData[#optionsData + 1] = {

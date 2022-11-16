@@ -21,6 +21,10 @@
                                 <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
                                 <Dimensions x="50" y="50"/>
                             </Texture>
+                            <Label name="$(parent)Label" text="Test" font="ZoFontWinH5" horizontalAlignment="CENTER">
+                                <Anchor point="TOP" relativeTo="$(grandparent)" relativePoint="TOP"/>
+                                <Dimensions x="60" y="20"/>
+                            </Label>
                     </Controls>
                     <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, RIGHT, "RNG Hate Counter")</OnMouseEnter>
                     <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
