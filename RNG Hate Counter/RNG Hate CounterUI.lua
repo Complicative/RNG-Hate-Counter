@@ -5,6 +5,17 @@ local differentCount = 0
 local totalCount = 0
 local sortByName = true
 
+function RNGHateCounterUI.OnStart(h, x, y)
+    RNGHCTLC1:SetHidden(h)
+    RNGHCTLC1:ClearAnchors()
+    RNGHCTLC1:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
+end
+
+function RNGHateCounterUI.saveButtonLocation()
+    RNGHateCounter.Settings.buttonX = RNGHCTLC1:GetLeft()
+    RNGHateCounter.Settings.buttonY = RNGHCTLC1:GetTop()
+end
+
 function RNGHateCounterUI.InitScrollList()
 
     if not tableInit then

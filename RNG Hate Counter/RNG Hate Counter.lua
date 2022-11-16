@@ -1,6 +1,6 @@
 RNGHateCounter = {
     name = "RNG Hate Counter",
-    version = "1.3.2",
+    version = "1.4.0",
     author = "@Complicative",
 }
 
@@ -15,6 +15,9 @@ RNGHateCounter.Default = {
     squirrel1 = nil,
     squirrel2 = nil,
     squirrel3 = nil,
+    buttonHidden = false;
+    buttonX = 100;
+    buttonY = 100;
 }
 RNGHateCounter.db = {
 }
@@ -119,6 +122,8 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
         RNGHateCounter.db.migrated = true
     end
     --
+    RNGHateCounterUI.OnStart(RNGHateCounter.Settings.buttonHidden, RNGHateCounter.Settings.buttonX,
+        RNGHateCounter.Settings.buttonY)
 
     -------------------------------------------------------------------------------------------------
     -- Creating Settings  --
@@ -129,8 +134,7 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
         name = "RNG Hate Counter",
         author = 'Complicative',
         version = RNGHateCounter.version,
-        website = "https://www.esoui.com/downloads/info3425-RNGHateCounterSpecificMobKillTracker.html",
-        slashCommand = "/rnghatecounter"
+        website = "https://www.esoui.com/downloads/info3425-RNGHateCounterSpecificMobKillTracker.html"
     }
 
     LAM2:RegisterAddonPanel("RNGHateCounterOptions", panelData)
@@ -145,7 +149,7 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
             ..
             "will result with updates on Mammoth kills at 5,10,15,.. and all other npc at 10,20,30,..." .. "\n\n" ..
             "Commands:" .. "\n" ..
-            "/killcount will show a list of all your kills. Arrow down button changes sorting. Search bar for... searching"
+            "/killcount or /rnghatecounter will show a list of all your kills. Arrow down button changes sorting. Search bar for... searching"
     }
     optionsData[#optionsData + 1] = {
         type = "editbox",
@@ -267,6 +271,16 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
     }
     optionsData[#optionsData + 1] = {
         type = "checkbox",
+        name = "Hide Button",
+        tooltip = "Want to hide the button |t24:24:esoui/art/fx/texture/modelfxtextures/blurred_skull.dds|t",
+        getFunc = function() return RNGHateCounter.Settings.buttonHidden end,
+        setFunc = function(value)
+            RNGHateCounter.Settings.buttonHidden = value
+            RNGHCTLC1:SetHidden(value)
+        end,
+    }
+    optionsData[#optionsData + 1] = {
+        type = "checkbox",
         name = "Debug",
         tooltip = "I wouldn't touch that",
         getFunc = function() return debug end,
@@ -296,6 +310,28 @@ EVENT_MANAGER:RegisterForEvent(RNGHateCounter.name, EVENT_ADD_ON_LOADED, RNGHate
 
 
 SLASH_COMMANDS["/killcount"] = function(squirrel)
+
+    if (squirrel) == [[]] then --open UI
+        RNGHateCounterUI.InitScrollList()
+    else --Output killcount of args
+        local count = 0
+        for k, v in pairs(RNGHateCounter.db.IteratableSavedVars) do
+            if string.lower(k) == string.lower(squirrel) then
+                count = v --get kill amount
+                squirrel = k --get proper Capitalisation
+            end
+        end
+        -- Posts kills of <squirrel> var if existing
+
+
+        CHAT_SYSTEM:AddMessage(getTimeStamp() .. cStart("FFFFFF") ..
+            "You have killed " ..
+            cStart("00BB00") ..
+            zo_strformat("<<2>>" .. cEnd() .. cStart("FFFFFF") .. " <<m:1>>", squirrel, count) .. cEnd())
+    end
+end
+
+SLASH_COMMANDS["/rnghatecounter"] = function(squirrel)
 
     if (squirrel) == [[]] then --open UI
         RNGHateCounterUI.InitScrollList()

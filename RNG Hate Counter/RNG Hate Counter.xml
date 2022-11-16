@@ -1,0 +1,32 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="RNGHCTLC1" hidden="false" clampedToScreen="true" movable="true" mouseEnabled="true">
+            <Dimensions x="60" y="60"/>
+            <Anchor point="TOPLEFT" relativeTo="GUI_ROOT" relativePoint="TOPLEFT" offsetX="100" offsetY="100"/>
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+            <OnMoveStop>
+                RNGHateCounterUI.saveButtonLocation()
+            </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)ButtonBG" inherits="ZO_DefaultBackdrop">
+                    <Dimensions x="60" y="60"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                </Backdrop>
+                <Button name="$(parent)Button">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                    <Dimensions x="40" y="40"/>
+                    <Controls>
+                            <Texture name="$(parent)Texture" textureFile="/art/fx/texture/modelfxtextures/blurred_skull.dds" clampedToScreen="true" movable="true" mouseEnabled="true">
+                                <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                                <Dimensions x="50" y="50"/>
+                            </Texture>
+                    </Controls>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, RIGHT, "RNG Hate Counter")</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>RNGHateCounterUI.InitScrollList()</OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>
