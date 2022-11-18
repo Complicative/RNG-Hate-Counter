@@ -1,6 +1,6 @@
 <GuiXml>
     <Controls>
-        <TopLevelControl name="RNGHCTLC1" hidden="false" clampedToScreen="true" movable="true" mouseEnabled="true">
+        <TopLevelControl name="RNGHCTLC1" hidden="true" clampedToScreen="true" movable="true" mouseEnabled="true">
             <Dimensions x="60" y="60"/>
             <Anchor point="TOPLEFT" relativeTo="GUI_ROOT" relativePoint="TOPLEFT" offsetX="100" offsetY="100"/>
             <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>

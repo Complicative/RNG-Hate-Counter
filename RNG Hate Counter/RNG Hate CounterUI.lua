@@ -1,4 +1,6 @@
-RNGHateCounterUI = {}
+RNGHateCounterUI = {
+    mainFragment
+}
 
 local tableInit = false
 local differentCount = 0
@@ -6,7 +8,7 @@ local totalCount = 0
 local sortByName = true
 
 function RNGHateCounterUI.OnStart(h, hl, x, y)
-    RNGHCTLC1:SetHidden(h)
+    --RNGHCTLC1:SetHidden(h)
     RNGHCTLC1ButtonLabel:SetHidden(hl)
     RNGHCTLC1:ClearAnchors()
     RNGHCTLC1:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
@@ -16,6 +18,13 @@ function RNGHateCounterUI.OnStart(h, hl, x, y)
     end
 
     RNGHCTLC1ButtonLabel:SetText(totalCount)
+
+    RNGHateCounterUI.mainFragment = ZO_SimpleSceneFragment:New(RNGHCTLC1)
+
+    if not h then
+        HUD_SCENE:AddFragment(RNGHateCounterUI.mainFragment)
+        HUD_UI_SCENE:AddFragment(RNGHateCounterUI.mainFragment)
+    end
 end
 
 function RNGHateCounterUI.saveButtonLocation()

@@ -1,6 +1,6 @@
 RNGHateCounter = {
     name = "RNG Hate Counter",
-    version = "1.4.1",
+    version = "1.4.2",
     author = "@Complicative",
 }
 
@@ -278,8 +278,14 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
         tooltip = "Want to hide the button?",
         getFunc = function() return RNGHateCounter.Settings.buttonHidden end,
         setFunc = function(value)
+            if value == false then
+                HUD_SCENE:AddFragment(RNGHateCounterUI.mainFragment)
+                HUD_UI_SCENE:AddFragment(RNGHateCounterUI.mainFragment)
+            else
+                HUD_SCENE:RemoveFragment(RNGHateCounterUI.mainFragment)
+                HUD_UI_SCENE:RemoveFragment(RNGHateCounterUI.mainFragment)
+            end
             RNGHateCounter.Settings.buttonHidden = value
-            RNGHCTLC1:SetHidden(value)
         end,
     }
     optionsData[#optionsData + 1] = {
