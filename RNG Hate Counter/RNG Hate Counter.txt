@@ -6,6 +6,7 @@
 ## SavedVariables: RNGHateCounterSettings RNGHateCounterDB
 ## DependsOn: LibAddonMenu-2.0
 
-RNG Hate Counter.lua
-RNG Hate CounterUI.lua
 RNG Hate Counter.xml
+RNG Hate CounterUI.lua
+RNG Hate Counter.lua
+

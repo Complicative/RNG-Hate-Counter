@@ -1,58 +1,40 @@
 RNGHateCounterUI = {
-    mainFragment
+    buttonFragment = ZO_SimpleSceneFragment:New(RNGHCButtonControl)
 }
 
-local tableInit = false
-local differentCount = 0
-local totalCount = 0
 local sortByName = true
 
-function RNGHateCounterUI.OnStart(h, hl, x, y)
-    --RNGHCTLC1:SetHidden(h)
-    RNGHCTLC1ButtonLabel:SetHidden(hl)
-    RNGHCTLC1:ClearAnchors()
-    RNGHCTLC1:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
-
-    for _, v in pairs(RNGHateCounter.db.IteratableSavedVars) do
-        totalCount = totalCount + v
+function RNGHateCounterUI.SetHidden(fragment, hidden)
+    if hidden then
+        HUD_SCENE:RemoveFragment(fragment)
+        HUD_UI_SCENE:RemoveFragment(fragment)
     end
-
-    RNGHCTLC1ButtonLabel:SetText(totalCount)
-
-    RNGHateCounterUI.mainFragment = ZO_SimpleSceneFragment:New(RNGHCTLC1)
-
-    if not h then
-        HUD_SCENE:AddFragment(RNGHateCounterUI.mainFragment)
-        HUD_UI_SCENE:AddFragment(RNGHateCounterUI.mainFragment)
+    if not hidden then
+        HUD_SCENE:AddFragment(fragment)
+        HUD_UI_SCENE:AddFragment(fragment)
     end
+end
+
+function RNGHateCounterUI.Init()
+
+    RNGHateCounterUI.SetHidden(RNGHateCounterUI.buttonFragment, RNGHateCounter.Settings.buttonHidden)
+    RNGHCButtonControlButtonLabel:SetHidden(RNGHateCounter.Settings.buttonLabelHidden)
+    RNGHCButtonControl:ClearAnchors()
+    RNGHCButtonControl:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, RNGHateCounter.Settings.buttonX,
+        RNGHateCounter.Settings.buttonY)
+
+    RNGHCButtonControlButtonLabel:SetText(RNGHateCounter.totalCount)
+
+    RNGHateCounterUI.CreateMainWindowControl()
+    RNGHateCounterUI.CreateScrollListControl()
+    RNGHateCounterUI.CreateScrollListDataType()
+
+    RNGHateCounterUI.Update()
 end
 
 function RNGHateCounterUI.saveButtonLocation()
-    RNGHateCounter.Settings.buttonX = RNGHCTLC1:GetLeft()
-    RNGHateCounter.Settings.buttonY = RNGHCTLC1:GetTop()
-end
-
-function RNGHateCounterUI.InitScrollList()
-
-    if not tableInit then
-        RNGHateCounterUI.CreateMainWindowControl()
-        RNGHateCounterUI.CreateScrollListControl()
-        RNGHateCounterUI.CreateScrollListDataType()
-        tableInit = true
-    else
-        RNGHateCounterUI.controlMainWindow:SetHidden(false)
-    end
-
-    differentCount = 0
-    totalCount = 0
-
-    local table = RNGHateCounterUI.PopulateScrollList(function(a) return true end)
-    RNGHateCounterUI.UpdateScrollList(RNGHateCounterUI.controlScrollList, table, 1)
-
-    RNGHateCounterUI.controlInfoLabel:SetText("Different Species killed: " ..
-        differentCount .. " | Total kills: " .. totalCount)
-
-
+    RNGHateCounter.Settings.buttonX = RNGHCButtonControl:GetLeft()
+    RNGHateCounter.Settings.buttonY = RNGHCButtonControl:GetTop()
 end
 
 function RNGHateCounterUI.CreateMainWindowControl()
@@ -60,7 +42,7 @@ function RNGHateCounterUI.CreateMainWindowControl()
     RNGHateCounterUI.controlMainWindow = WINDOW_MANAGER:CreateTopLevelWindow("TLW")
     RNGHateCounterUI.controlMainWindow:SetAnchor(CENTER, GuiRoot, CENTER)
     RNGHateCounterUI.controlMainWindow:SetDimensions(600, 800)
-    RNGHateCounterUI.controlMainWindow:SetHidden(false)
+    RNGHateCounterUI.controlMainWindow:SetHidden(true)
     RNGHateCounterUI.controlMainWindow:SetMovable(true)
     RNGHateCounterUI.controlMainWindow:SetClampedToScreen(true)
     RNGHateCounterUI.controlMainWindow:SetMouseEnabled(true)
@@ -78,6 +60,21 @@ function RNGHateCounterUI.CreateMainWindowControl()
     RNGHateCounterUI.controlLabel:SetAnchor(TOPLEFT, RNGHateCounterUI.controlMainWindow, TOPLEFT, 10, 5)
     RNGHateCounterUI.controlLabel:SetText("RNG Hate Counter")
 
+    --SearchBar
+    RNGHateCounterUI.controlSearchBar = WINDOW_MANAGER:CreateControlFromVirtual("TLWSearchBar",
+        RNGHateCounterUI.controlMainWindow, "ZO_DefaultEditForBackdrop")
+    RNGHateCounterUI.controlSearchBar:ClearAnchors()
+    RNGHateCounterUI.controlSearchBar:SetAnchor(TOPRIGHT, RNGHateCounterUI.controlMainWindow, TOPRIGHT, -40, 10)
+    RNGHateCounterUI.controlSearchBar:SetDimensions(200, 28)
+    RNGHateCounterUI.controlSearchBar:SetText("Search")
+    RNGHateCounterUI.controlSearchBar:SetHandler("OnTextChanged", RNGHateCounterUI.Update)
+    RNGHateCounterUI.controlSearchBar:SetHandler("OnFocusGained",
+        function() RNGHateCounterUI.controlSearchBar:Clear() end)
+    --SearchBarBackground
+    RNGHateCounterUI.controlSearchBarBackground = WINDOW_MANAGER:CreateControlFromVirtual("TLWSearchBarBG",
+        RNGHateCounterUI.controlSearchBar, "ZO_DarkThinFrame")
+    RNGHateCounterUI.controlSearchBarBackground:SetAnchorFill(RNGHateCounterUI.controlSearchBar)
+
     --SwapOrderButton
     RNGHateCounterUI.controlSwapButton = WINDOW_MANAGER:CreateControlFromVirtual("TLWSwapButton",
         RNGHateCounterUI.controlMainWindow, "ZO_DropdownButton")
@@ -88,45 +85,10 @@ function RNGHateCounterUI.CreateMainWindowControl()
     RNGHateCounterUI.controlSwapButton:SetHandler("OnMouseExit", function()
         ZO_Tooltips_HideTextTooltip()
     end)
-    RNGHateCounterUI.controlSwapButton:SetHandler("OnClicked",
-        function()
-            sortByName = not sortByName
-            if RNGHateCounterUI.controlSearchBar:GetText() ~= "Search" then
-                local table = RNGHateCounterUI.PopulateScrollList(function(a)
-                    if string.find(string.lower(a), string.lower(RNGHateCounterUI.controlSearchBar:GetText())) ~= nil then return true else return false end
-                end)
-                RNGHateCounterUI.UpdateScrollList(RNGHateCounterUI.controlScrollList, table, 1)
-            else
-                RNGHateCounterUI.InitScrollList()
-            end
-        end)
-
-
-    --SearchBar
-    RNGHateCounterUI.controlSearchBar = WINDOW_MANAGER:CreateControlFromVirtual("TLWSearchBar",
-        RNGHateCounterUI.controlMainWindow, "ZO_DefaultEditForBackdrop")
-    RNGHateCounterUI.controlSearchBar:ClearAnchors()
-    RNGHateCounterUI.controlSearchBar:SetAnchor(TOPRIGHT, RNGHateCounterUI.controlMainWindow, TOPRIGHT, -40, 10)
-    RNGHateCounterUI.controlSearchBar:SetDimensions(200, 28)
-    RNGHateCounterUI.controlSearchBar:SetText("Search")
-    RNGHateCounterUI.controlSearchBar:SetHandler("OnTextChanged", function()
-        differentCount = 0
-        totalCount = 0
-        local table = RNGHateCounterUI.PopulateScrollList(function(a)
-            if string.find(string.lower(a), string.lower(RNGHateCounterUI.controlSearchBar:GetText())) ~= nil then return true else return false end
-        end)
-        RNGHateCounterUI.UpdateScrollList(RNGHateCounterUI.controlScrollList, table, 1)
-
-        RNGHateCounterUI.controlInfoLabel:SetText("Different Species killed: " ..
-            differentCount .. " | Total kills: " .. totalCount)
-
+    RNGHateCounterUI.controlSwapButton:SetHandler("OnClicked", function()
+        sortByName = not sortByName
+        RNGHateCounterUI.Update()
     end)
-    RNGHateCounterUI.controlSearchBar:SetHandler("OnFocusGained",
-        function() RNGHateCounterUI.controlSearchBar:Clear() end)
-    --SearchBarBackground
-    RNGHateCounterUI.controlSearchBarBackground = WINDOW_MANAGER:CreateControlFromVirtual("TLWSearchBarBG",
-        RNGHateCounterUI.controlSearchBar, "ZO_DarkThinFrame")
-    RNGHateCounterUI.controlSearchBarBackground:SetAnchorFill(RNGHateCounterUI.controlSearchBar)
 
     --Close Button
     RNGHateCounterUI.controlCloseButton = WINDOW_MANAGER:CreateControlFromVirtual("TLWCloseButton",
@@ -145,6 +107,8 @@ function RNGHateCounterUI.CreateMainWindowControl()
     RNGHateCounterUI.controlInfoLabel:SetColor(RNGHateCounterUI.controlLabel:GetColor())
     RNGHateCounterUI.controlInfoLabel:SetAnchor(BOTTOM, RNGHateCounterUI.controlMainWindow, BOTTOM)
     RNGHateCounterUI.controlInfoLabel:SetText("Different Species killed: 0 | Total kills: 0")
+
+    return RNGHateCounterUI.controlMainWindow
 end
 
 function RNGHateCounterUI.CreateScrollListControl()
@@ -177,8 +141,6 @@ function RNGHateCounterUI.PopulateScrollList(func)
                 name = k,
                 amount = v
             })
-            differentCount = differentCount + 1
-            totalCount = totalCount + v
         end
     end
 
@@ -212,6 +174,21 @@ function RNGHateCounterUI.LayoutRow(rowControl, data, scrollList)
     rowControl:SetMaxLineCount(1)
     rowControl:SetText(data.name .. ": " .. data.amount)
 
+    RNGHateCounterUI.controlInfoLabel:SetText("Different Species killed: " ..
+        RNGHateCounter.differentCount .. " | Total kills: " .. RNGHateCounter.totalCount)
 
+    RNGHCButtonControlButtonLabel:SetText(RNGHateCounter.totalCount)
 
+end
+
+function RNGHateCounterUI.Update()
+    if RNGHateCounterUI.controlSearchBar:GetText() ~= "Search" then
+        local table = RNGHateCounterUI.PopulateScrollList(function(a)
+            if string.find(string.lower(a), string.lower(RNGHateCounterUI.controlSearchBar:GetText())) ~= nil then return true else return false end
+        end)
+        RNGHateCounterUI.UpdateScrollList(RNGHateCounterUI.controlScrollList, table, 1)
+    else
+        local table = RNGHateCounterUI.PopulateScrollList(function(a) return true end)
+        RNGHateCounterUI.UpdateScrollList(RNGHateCounterUI.controlScrollList, table, 1)
+    end
 end

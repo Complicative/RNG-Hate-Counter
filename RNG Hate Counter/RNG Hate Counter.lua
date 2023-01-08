@@ -2,6 +2,8 @@ RNGHateCounter = {
     name = "RNG Hate Counter",
     version = "1.4.2",
     author = "@Complicative",
+    totalCount = 0,
+    differentCount = 0
 }
 
 RNGHateCounter.Settings = {}
@@ -41,6 +43,16 @@ local function getTimeStamp()
     end
 end
 
+function RNGHateCounter.GetCount()
+    local totalCount = 0
+    local differentCount = 0
+    for _, v in pairs(RNGHateCounter.db.IteratableSavedVars) do
+        totalCount = totalCount + v
+        differentCount = differentCount + 1
+    end
+    return totalCount, differentCount
+end
+
 -------------------------------------------------------------------------------------------------
 -- OnPlayerCombatState  --
 -------------------------------------------------------------------------------------------------
@@ -65,7 +77,7 @@ function RNGHateCounter.CombatCallbacks(_, result, isError, aName, aGraphic, aAc
     end
 
     if (result == 2262 or result == 2260) then
-        RNGHCTLC1ButtonLabel:SetText(RNGHCTLC1ButtonLabel:GetText() + 1)
+        RNGHateCounter.totalCount = RNGHateCounter.totalCount + 1
         -- Check if mob has is the table already
         if (RNGHateCounter.db.IteratableSavedVars[squirrel] ~= nil) then
             -- Increment value by 1
@@ -73,6 +85,7 @@ function RNGHateCounter.CombatCallbacks(_, result, isError, aName, aGraphic, aAc
         else
             -- Set value to 1
             RNGHateCounter.db.IteratableSavedVars[squirrel] = 1
+            RNGHateCounter.differentCount = RNGHateCounter.differentCount + 1
         end
         -- If it's a tracked mob or everything is posted
         if (
@@ -98,6 +111,8 @@ function RNGHateCounter.CombatCallbacks(_, result, isError, aName, aGraphic, aAc
             CHAT_SYSTEM:AddMessage(getTimeStamp() .. cStart("FFFFFF") ..
                 squirrel .. " (" .. RNGHateCounter.db.IteratableSavedVars[squirrel] .. ")" .. cEnd())
         end
+        RNGHateCounterUI.Update()
+        --RNGHCButtonControlButtonLabel:SetText(RNGHateCounter.totalCount)
     end
 end
 
@@ -124,9 +139,9 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
         RNGHateCounter.db.migrated = true
     end
     --
-    RNGHateCounterUI.OnStart(RNGHateCounter.Settings.buttonHidden, RNGHateCounter.Settings.buttonLabelHidden,
-        RNGHateCounter.Settings.buttonX,
-        RNGHateCounter.Settings.buttonY)
+    RNGHateCounter.totalCount, RNGHateCounter.differentCount = RNGHateCounter.GetCount()
+
+    RNGHateCounterUI.Init()
 
     -------------------------------------------------------------------------------------------------
     -- Creating Settings  --
@@ -278,13 +293,7 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
         tooltip = "Want to hide the button?",
         getFunc = function() return RNGHateCounter.Settings.buttonHidden end,
         setFunc = function(value)
-            if value == false then
-                HUD_SCENE:AddFragment(RNGHateCounterUI.mainFragment)
-                HUD_UI_SCENE:AddFragment(RNGHateCounterUI.mainFragment)
-            else
-                HUD_SCENE:RemoveFragment(RNGHateCounterUI.mainFragment)
-                HUD_UI_SCENE:RemoveFragment(RNGHateCounterUI.mainFragment)
-            end
+            RNGHateCounterUI.SetHidden(RNGHateCounterUI.buttonFragment, value)
             RNGHateCounter.Settings.buttonHidden = value
         end,
     }
@@ -295,7 +304,7 @@ function RNGHateCounter.OnAddOnLoaded(event, addonName)
         getFunc = function() return RNGHateCounter.Settings.buttonLabelHidden end,
         setFunc = function(value)
             RNGHateCounter.Settings.buttonLabelHidden = value
-            RNGHCTLC1ButtonLabel:SetHidden(value)
+            RNGHCButtonControlButtonLabel:SetHidden(value)
         end,
     }
     optionsData[#optionsData + 1] = {
