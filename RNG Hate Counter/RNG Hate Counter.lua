@@ -92,7 +92,7 @@ function RNGHateCounter.CombatCallbacks(_, result, isError, aName, aGraphic, aAc
         -- If it's a tracked mob or everything is posted
         if (
             (string.lower(squirrel) == string.lower(RNGHateCounter.Settings.squirrel1) and
-                RRNGHateCounterData[RNGHateCounter.worldName][RNGHateCounter.accountName][squirrel] %
+                RNGHateCounterData[RNGHateCounter.worldName][RNGHateCounter.accountName][squirrel] %
                 RNGHateCounter.Settings.throttle1 == 0 and
                 RNGHateCounter.Settings.throttle1 >= 0)
                 or

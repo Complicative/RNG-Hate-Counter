@@ -12,7 +12,7 @@
                 <Backdrop name="$(parent)BG" centerColor="FF0000" edgeColor="00000000">
                     <AnchorFill />
                 </Backdrop>
-                <Label name="$(parent)Name" font="ZoFontWinH5" color="FFFFFF"
+                <Label name="$(parent)Name" font="ZoFontGame" color="FFFFFF"
                     horizontalAlignment="LEFT" text="Name">
                     <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"
                         offsetX="30"
@@ -21,7 +21,7 @@
                         offsetX="100" />
 
                 </Label>
-                <Label name="$(parent)Amount" font="ZoFontWinH5" color="FFFFFF"
+                <Label name="$(parent)Amount" font="ZoFontGame" color="FFFFFF"
                     horizontalAlignment="CENTER" text="Amount">
                     <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT"
                         offsetX="-30" offsetY="0" />
@@ -101,7 +101,7 @@
                     <Controls>
                         <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
                         <Label name="$(parent)Label"
-                            font="$(ANTIQUE_FONT)|16|soft-shadow-thick" color="CFDCBD"
+                            font="ZoFontWinH4" color="FFFFFF"
                             horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Name">
                             <Anchor point="BOTTOMLEFT" relativeTo="$(grandparent)ScrollList"
                                 relativePoint="TOPLEFT" offsetX="30"
@@ -130,7 +130,7 @@
                     <Controls>
                         <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
                         <Label name="$(parent)Label"
-                            font="$(ANTIQUE_FONT)|16|soft-shadow-thick" color="CFDCBD"
+                            font="ZoFontWinH4" color="FFFFFF"
                             horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Amount">
                             <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)"
                                 relativePoint="TOPRIGHT" offsetX="-30" />
