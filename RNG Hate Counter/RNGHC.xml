@@ -89,9 +89,7 @@
                     inherits="ZO_DefaultButton">
 
                     <Anchor point="BOTTOMLEFT" relativeTo="$(parent)ScrollList"
-                        relativePoint="TOPLEFT" />
-                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ScrollList"
-                        relativePoint="TOP" offsetX="96" />
+                        relativePoint="TOPLEFT" offsetX="30" offsetY="-5" />
                     <Textures
                         normal=""
                         pressed=""
@@ -99,13 +97,12 @@
                         disabled=""
                     />
                     <Controls>
-                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <!-- <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" /> -->
                         <Label name="$(parent)Label"
                             font="ZoFontWinH4" color="FFFFFF"
                             horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Name">
-                            <Anchor point="BOTTOMLEFT" relativeTo="$(grandparent)ScrollList"
-                                relativePoint="TOPLEFT" offsetX="30"
-                                offsetY="0" />
+                            <Anchor point="CENTER" relativeTo="$(parent)"
+                                relativePoint="CENTER" />
                         </Label>
                     </Controls>
                     <OnClicked>
@@ -118,9 +115,7 @@
 
                     <Anchor point="BOTTOMLEFT" relativeTo="$(parent)ScrollList" relativePoint="TOP"
                         offsetX="104"
-                        offsetY="0" />
-                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ScrollList"
-                        relativePoint="TOPRIGHT" offsetX="-16" />
+                        offsetY="-5" />
                     <Textures
                         normal=""
                         pressed=""
@@ -128,16 +123,12 @@
                         disabled=""
                     />
                     <Controls>
-                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                        <!-- <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" /> -->
                         <Label name="$(parent)Label"
                             font="ZoFontWinH4" color="FFFFFF"
                             horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Amount">
-                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)"
-                                relativePoint="TOPRIGHT" offsetX="-30" />
-                            <Anchor point="BOTTOMLEFT" relativeTo="$(grandparent)ScrollList"
-                                relativePoint="TOP"
-                                offsetX="100"
-                                offsetY="0" />
+                            <Anchor point="CENTER" relativeTo="$(parent)"
+                                relativePoint="CENTER" />
                         </Label>
                     </Controls>
                     <OnClicked>

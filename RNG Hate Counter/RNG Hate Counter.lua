@@ -1,6 +1,6 @@
 RNGHateCounter = {
     name = "RNG Hate Counter",
-    version = "1.5.0",
+    version = "1.5.1",
     author = "@Complicative",
     totalCount = 0,
     differentCount = 0,
