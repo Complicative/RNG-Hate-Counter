@@ -2,7 +2,6 @@ RNGHCUI = {
     buttonFragment = ZO_SimpleSceneFragment:New(RNGHCButtonControl),
     mainFragment = ZO_SimpleSceneFragment:New(RNGHCMainWindow),
     sortBy = "name",
-    rowColorSwap = true
 }
 
 function RNGHCUI.SetHidden(fragment, hidden)
@@ -42,7 +41,7 @@ end
 function RNGHCUI.CreateScrollListDataType()
     --Init of the ScrollList
     ZO_ScrollList_AddDataType(RNGHCMainWindow:GetNamedChild("ScrollList"):GetNamedChild("ItemList"), 1,
-        "RNGHateCounterListItemTemplate", RNGHateCounter.Settings.scrollListRowHeight, RNGHCUI.UpdateDataRow)
+        "RNGHateCounterListItemTemplate", 30, RNGHCUI.UpdateDataRow)
 end
 
 function RNGHCUI.GetFilteredList(func)
@@ -73,18 +72,6 @@ end
 
 function RNGHCUI.UpdateDataRow(control, data)
     --Gets called for every row of data
-    if RNGHCUI.rowColorSwap then --Alternates between colours of the rows
-        control:GetNamedChild("BG"):SetCenterColor(1, 1, 1, 0.1)
-    else
-        control:GetNamedChild("BG"):SetCenterColor(1, 1, 1, 0.2)
-    end
-    RNGHCUI.rowColorSwap = not RNGHCUI.rowColorSwap
-
-    control:SetHeight(RNGHateCounter.Settings.scrollListRowHeight)
-    control:GetNamedChild("Name"):SetFont(string.format("$(MEDIUM_FONT)|%d|soft-shadow-thin",
-        RNGHateCounter.Settings.scrollListFontSize))
-    control:GetNamedChild("Amount"):SetFont(string.format("$(MEDIUM_FONT)|%d|soft-shadow-thin",
-        RNGHateCounter.Settings.scrollListFontSize))
 
     control:GetNamedChild("Name"):SetText(data.name) --Name
     control:GetNamedChild("Amount"):SetText(ZO_CommaDelimitNumber(data.amount)) --Amount
@@ -101,7 +88,6 @@ end
 
 function RNGHCUI.Update()
     --Gets called when the list is supposed to be updated
-    RNGHCUI.rowColorSwap = true --Resets the color swap bool so that the rows always starts with the same colours
 
     local func = function() return true end --no filtering
     if RNGHCMainWindow:GetNamedChild("SearchBar"):GetText() ~= "Search" then --filtering by search text

@@ -1,6 +1,6 @@
 RNGHateCounter = {
     name = "RNG Hate Counter",
-    version = "1.5.1",
+    version = "1.5.2",
     author = "@Complicative",
     totalCount = 0,
     differentCount = 0,
@@ -23,8 +23,6 @@ RNGHateCounter.Default = {
     buttonLabelHidden = false,
     buttonX = 100,
     buttonY = 100,
-    scrollListRowHeight = 30,
-    scrollListFontSize = 18
 }
 
 local debug = false

@@ -184,7 +184,7 @@ function RNGHCOptions.Init()
             RNGHCButtonControlButtonLabel:SetHidden(value)
         end,
     }
-    optionsData[#optionsData + 1] = {
+    --[[ optionsData[#optionsData + 1] = {
         type = "slider",
         name = "List Font Size",
         min = 18,
@@ -200,7 +200,7 @@ function RNGHCOptions.Init()
         getFunc = function() return RNGHateCounter.Settings.scrollListRowHeight end,
         setFunc = function(value) RNGHateCounter.Settings.scrollListRowHeight = value RNGHCUI.Update() end,
         requiresReload = true
-    }
+    } ]]
     --[[ optionsData[#optionsData + 1] = {
         type = "checkbox",
         name = "Debug",
