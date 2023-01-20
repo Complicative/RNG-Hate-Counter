@@ -1,6 +1,6 @@
 RNGHateCounter = {
     name = "RNG Hate Counter",
-    version = "1.5.2",
+    version = "1.5.4",
     author = "@Complicative",
     totalCount = 0,
     differentCount = 0,
@@ -155,13 +155,24 @@ function RNGHateCounter.SetupSV()
         end
 
         --Copy from second generation
-        for k, v in pairs(RNGHateCounter.db.IteratableSavedVars) do
-            RNGHateCounterData[RNGHateCounter.worldName][RNGHateCounter.accountName][k] = v
+        for k, v in pairs(RNGHateCounterDB["Default"]) do
+            if not RNGHateCounterData[RNGHateCounter.worldName][k] then
+                RNGHateCounterData[RNGHateCounter.worldName][k] = {}
+            end
+            for i, w in pairs(RNGHateCounterDB["Default"][k]["$AccountWide"]["IteratableSavedVars"]) do
+                RNGHateCounterData[RNGHateCounter.worldName][k][i] = w
+            end
         end
 
         --Delete second generation
         RNGHateCounterDB = nil
 
+    end
+    if not RNGHateCounterData[RNGHateCounter.worldName] then
+        RNGHateCounterData[RNGHateCounter.worldName] = {}
+    end
+    if not RNGHateCounterData[RNGHateCounter.worldName][RNGHateCounter.accountName] then
+        RNGHateCounterData[RNGHateCounter.worldName][RNGHateCounter.accountName] = {}
     end
     --if not RNGHateCounterData[RNGHateCounter.worldName] then RNGHateCounterData[RNGHateCounter.worldName] = {} end
 end
