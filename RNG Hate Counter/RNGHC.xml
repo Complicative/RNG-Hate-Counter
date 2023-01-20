@@ -139,7 +139,7 @@
             </Controls>
         </TopLevelControl>
 
-        <TopLevelControl name="RNGHCButtonControl" hidden="false" clampedToScreen="true"
+        <TopLevelControl name="RNGHCButtonControl" hidden="true" clampedToScreen="true"
             movable="true"
             mouseEnabled="true">
             <Dimensions x="50" y="50" />
